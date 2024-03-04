@@ -1,0 +1,83 @@
+<h2>Reading files</h2>
+<div class="step-text">
+<p>There are many different ways to read files in Kotlin, but let's focus on just a few of them for now. The core class for file processing is <strong>File</strong> from the <code class="language-kotlin">java.io</code> package. Kotlin provides additional functionality over Java implementation through <strong>Extension Functions</strong>. This means that by just importing <code class="language-kotlin">java.io.File</code> into your project, you can use functionality from both Java and Kotlin File implementations. Let's take a closer look at these extension functions.</p>
+<h5 id="readtext">readText</h5>
+<p>First, there is <code class="language-kotlin">readText()</code> which helps you read the whole file in just one String variable.</p>
+<p>Say we create a text file <strong>reading.txt</strong> with the following text:</p>
+<pre><code class="language-no-highlight">Kotlin or Java,
+Java or C++.</code></pre>
+<p>We put it in the <strong>src</strong> folder, and now we can read it with our <code class="language-kotlin">readText()</code> method:</p>
+<pre><code class="language-kotlin">import java.io.File
+
+
+val fileName = "src/reading.txt"
+val lines = File(fileName).readText()
+print(lines)</code></pre>
+<p>As you may have already guessed, the output is this:</p>
+<pre><code class="language-kotlin">Kotlin or Java,
+Java or C++.</code></pre>
+<p>Instead of reading our file right away to a String variable, we can create a reference first and then read the text later:</p>
+<pre><code class="language-kotlin">val fileName = "src/new.txt"
+val file = File(fileName)
+val lines = file.readText()
+print(lines)</code></pre>
+<p>As you see, we made a mistake and tried to read a different file – <strong>new.txt</strong>. If there is no such file in the file system, then <code class="language-kotlin">FileNotFoundException</code> is thrown. You can catch and process it as a usual Kotlin's exception, it's totally up to you. Now we can fix our example and continue:</p>
+<pre><code class="language-kotlin">val fileName = "src/reading.txt"
+val file = File(fileName)
+if (file.exists()) { // checks if file exists
+    val lines = file.readText()
+    print(lines)
+} else print("No such file")</code></pre>
+<p>Actually, our <code class="language-kotlin">file</code> variable didn't open the file, it just provided a reference with the path to it. What's more, <code class="language-kotlin">readText()</code> automatically opened and closed the file!</p>
+<p>We can also provide specific charset for reading the file:</p>
+<pre><code class="language-kotlin">val line = File(fileName).readText(Charsets.US_ASCII)</code></pre>
+<p>Just keep it in mind that by default <code class="language-kotlin">readText()</code> has <strong>UTF-8</strong> charset encoding, but you can change it whenever you want. Also, Kotlin doesn't recommend using this function with files larger than 2 Gb, because this may cause <code class="language-kotlin">OutOfMemoryError</code>.</p>
+<p>We can also check the existence of a file with <code class="language-kotlin">exists()</code> method, which will return <strong>false</strong> in case of a missing file and <strong>true</strong> if Kotlin found it. Actually, you can use any method from <strong>File</strong>, for example, <code class="language-kotlin">length()</code> or <code class="language-kotlin">delete()</code>.</p>
+<h5 id="readlines">readLines</h5>
+<p>Function <code class="language-kotlin">readLines()</code> provides the functionality of reading all lines from a file and storing them in a <strong>List</strong>:</p>
+<pre><code class="language-kotlin">val fileName = "src/reading.txt"
+val lines = File(fileName).readLines()
+for (line in lines){
+    println(line)
+} </code></pre>
+<p>The output will be the following:</p>
+<pre><code class="language-kotlin">Kotlin or Java,
+Java or C++.</code></pre>
+<p>This method has the same size limitations and charset specification as <code class="language-kotlin">readText()</code>.</p>
+<h5 id="readbytes">readBytes</h5>
+<p>Function <code class="language-kotlin">readBytes()</code> may be helpful if you need to store file contents as an array of bytes:</p>
+<pre><code class="language-kotlin">val lines = File(fileName).readBytes()</code></pre>
+<p>Note, this function returns the <code class="language-kotlin">ByteArray</code>. The <code class="language-kotlin">Array</code> structure is similar to the <code class="language-kotlin">MutableList</code>, you cannot resize it, but you can modify elements. You can easily convert <code class="language-kotlin">MutableList</code> to <code class="language-kotlin">ByteArray</code> and vice versa with <code class="language-kotlin">toByteArray()</code> and <code class="language-kotlin">toMutableList()</code>  functions.</p>
+<p>It's still not recommended using this option with large files (2 Gb or more). This method is used as an implementation of <code class="language-kotlin">readText()</code> function with conversion to String in Kotlin source files.</p>
+<h5 id="foreachline">forEachLine</h5>
+<p> <code class="language-kotlin">forEachLine()</code> is the recommended way of reading large files:</p>
+<pre><code class="language-kotlin">val fileName = "src/reading.txt"
+File(fileName).forEachLine { println(it) }</code></pre>
+<p>This lambda reading approach provides an action (<code class="language-kotlin">println()</code> in our case) for each line.</p>
+<p> </p>
+<p>It's always a possibility that the file you're going to read has already been opened in another process, or it might have access restrictions. In such cases, <code class="language-kotlin">AccessDeniedException</code> is thrown.</p>
+<h5 id="file-separator">File separator</h5>
+<p>In our examples, we used the <code class="language-kotlin">fileName</code> variable with the path value "<code class="language-kotlin">src/reading.txt"</code>. Note that the file path separator is a platform-dependent character. For example, for Windows it is <code class="language-kotlin">'\'</code>, and for UNIX and MAC it is <code class="language-kotlin">'/'</code>.<br/>
+To avoid errors when accessing the file, we can use <code class="language-kotlin">File.separator</code> from the library <code class="language-kotlin">java.io.File</code>. <code class="language-kotlin">File.separator</code> returns the value of the system separator depending on the system used. Thus, our example can be as follows:</p>
+<pre><code class="language-kotlin">val separator = File.separator
+val fileName = "src${separator}reading.txt"
+val lines = File(fileName).readLines()
+for (line in lines){
+    println(line)
+}</code></pre>
+<h5 id="using-path">Using Path</h5>
+<p>Kotlin also offer <code class="language-kotlin">Path </code>object to work with files. You can use this object by importing import <code class="language-kotlin">kotlin.io.path.*</code>. This object offers us various functions to handle directories and files. Including reading and writing.</p>
+<pre><code class="language-kotlin">val textFile = Path("/path/to/textFile.txt") // path to the file
+
+println(textFile.exists()) // check if the file exists
+
+val text = textFile.readText() // read the text from the file as a string
+val lines = textFile.readLines() // read the lines from the file as a collection
+text.lines().forEach { println(it) } // read the lines from the file as a sequence
+
+val bytesFile = Path("/path/to/bytesFile.txt") // path to the file
+val bytes = bytesFile.readBytes() // read the bytes from the file as a byte array
+bytes.forEach { println(it) } // read the bytes from the file as a sequence</code></pre>
+<h5 id="conclusion">Conclusion</h5>
+<p>Now you know the basic methods of Kotlin for reading files. Some of them are better for large files, some can break up the text into List of Strings: you just need to think which one is best for a particular situation!</p>
+</div>

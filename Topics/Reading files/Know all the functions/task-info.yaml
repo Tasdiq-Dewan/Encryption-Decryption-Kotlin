@@ -1,0 +1,29 @@
+type: matching
+captions:
+  - readText()
+  - readLines()
+  - readBytes()
+  - forEachLine
+options:
+  - Reads the whole file and stores it as a variable of type ByteArray
+  - Reads the whole file and stores it as a variable of type String
+  - Reads the whole file and calls a certain action on each line
+  - Reads the whole file and stores it as a variable of type List
+files:
+  - name: src/Main.kt
+    visible: true
+    text: |
+      // You can experiment here, it won’t be checked
+      
+      fun main(args: Array<String>) {
+        // put your code here
+      }
+    learner_created: false
+feedback_link: https://hyperskill.org/learn/step/20385#comment
+status: Solved
+record: -1
+ordering:
+  - 0
+  - 1
+  - 2
+  - 3
